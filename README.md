@@ -162,7 +162,7 @@ bring-cli add-items "Weekly groceries" items.json
 This repository stays a normal CLI project. To copy the CLI code into a skill project, run:
 
 ```bash
-./install.sh /path/to/skill/bring
+./copy-to-skill.sh /path/to/skill/bring
 ```
 
 The script creates this target layout:

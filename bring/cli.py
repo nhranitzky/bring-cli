@@ -2,9 +2,8 @@ import asyncio
 import json
 import os
 from pathlib import Path
-from typing import Annotated, Any, cast
+from typing import Annotated
 
-import click
 import typer
 
 from .core.bring_client import (
@@ -172,48 +171,6 @@ def check_off(
         render(result, output)
     except BringClientError as e:
         render_error(str(e), output)
-
-
-@app.command("schema", hidden=True)
-def schema_cmd() -> None:
-    """Output a JSON schema of all commands for skill generation."""
-    click_app = cast(click.Group, typer.main.get_command(app))
-
-    def _param(p: click.Parameter) -> dict[str, Any]:
-        type_obj = p.type
-        type_name = getattr(type_obj, "name", str(type_obj))
-        choices = None
-        if isinstance(type_obj, click.Choice):
-            choices = list(type_obj.choices)
-            type_name = "choice"
-        default = p.default() if callable(p.default) else p.default
-        return {
-            "name": p.name,
-            "type": type_name,
-            "required": p.required,
-            "default": default,
-            "help": getattr(p, "help", None),
-            "choices": choices,
-        }
-
-    def _cmd(name: str, cmd: click.Command) -> dict[str, Any]:
-        entry: dict[str, Any] = {"name": name, "help": cmd.help or ""}
-        if isinstance(cmd, click.Group):
-            entry["subcommands"] = [_cmd(n, cmd.commands[n]) for n in cmd.commands]
-        else:
-            entry["params"] = [_param(p) for p in cmd.params if p.name != "help"]
-        return entry
-
-    schema: dict[str, Any] = {
-        "cli": "bring-cli",
-        "launcher": "bin/bring-cli",
-        "commands": [
-            _cmd(name, click_app.commands[name])
-            for name in click_app.commands
-            if not click_app.commands[name].hidden
-        ],
-    }
-    print(json.dumps(schema, indent=2, ensure_ascii=False))
 
 
 def main() -> None:
