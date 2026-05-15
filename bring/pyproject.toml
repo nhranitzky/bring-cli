@@ -1,0 +1,14 @@
+[project]
+name = "bring-cli"
+version = "0.1.0"
+description = "Runtime dependencies for the Bring! CLI skill wrapper"
+requires-python = ">=3.11"
+dependencies = [
+    "typer>=0.12",
+    "rich>=13.7",
+    "pydantic>=2.7",
+    "bring-api>=0.9",
+]
+
+[tool.uv]
+package = false
